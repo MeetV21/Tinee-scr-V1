@@ -108,4 +108,8 @@ public class ClientController extends AbstractController {
     this.getModel().clearDraftLines();
     this.currentCommand = -1;
   }
+
+    void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import sep.mvc.AbstractView;
 import sep.mvc.DraftingCommand;
@@ -23,6 +24,10 @@ import sep.tinee.net.message.ShowRequest;
 public class ClientView extends AbstractView {
 
   String state = "Main";
+
+    ClientView(Locale locale) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
   @Override
   public void close() {
