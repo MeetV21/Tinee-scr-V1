@@ -74,7 +74,7 @@ public abstract class AbstractController {
    *
    * @return The bound model
    */
-  protected AbstractModel getModel() {
+  public AbstractModel getModel() {
     return this.model;
   }
 

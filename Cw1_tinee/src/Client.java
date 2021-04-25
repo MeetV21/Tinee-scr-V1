@@ -65,9 +65,10 @@ public class Client {
 
   ClientController controller;
 
-  Client(String user, String host, int port, Locale locale) throws IOException {
+  Client(String user, String host, int port, Locale locale) {
     ClientModel model = new ClientModel(user,host, port);
-    ClientView view = new ClientView(locale);
+    ClientView view = new ClientView();
+    view.setLocale(locale);
     controller = new ClientController(model, view);
   }
 
@@ -95,7 +96,7 @@ public class Client {
     
     String country = null;
     String language = null;
-    
+
     try{
       country = args[3];
       language = args[4];
@@ -106,7 +107,7 @@ public class Client {
     }
     Locale locale = new Locale(language, country);
 
-    System.out.println("Locale set to "+language+"_"+country);
+    System.out.println("Local set to "+language+"_"+country);
     // Create client object
     Client client = new Client(user, host, port, locale);
     client.run();

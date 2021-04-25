@@ -15,6 +15,8 @@
 package sep.mvc;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +43,7 @@ import java.util.logging.Logger;
 public abstract class AbstractView {
 
   private AbstractController control;
+  ResourceBundle messages = null;
 
   /**
    * This View is created without a registered Controller. A Controller is
@@ -149,4 +152,17 @@ public abstract class AbstractView {
     }
     this.control = control;
   }
+  /**
+   * Registers the ResourceBundle to support Internationalisation
+   *
+   * @param locale The locale to be used to get ResourceBundle
+   */
+  public void setLocale(final Locale locale) {
+    this.messages = ResourceBundle.getBundle("messages", locale);
+  }
+
+  public ResourceBundle getResourceBundle() { 
+    return this.messages;
+  }
 }
+

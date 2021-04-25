@@ -1,9 +1,6 @@
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import sep.tinee.net.channel.ClientChannel;
-import sep.tinee.net.message.Message;
+
+import java.util.*;
 
 /**
  * A helper class for the current prototype {@link Client client}.  <i>E.g.</i>,
@@ -11,45 +8,24 @@ import sep.tinee.net.message.Message;
  */
 public class CLFormatter {
 
-  static ClientChannel chan;  // Client-side channel for talking to a Tinee server
-
-  CLFormatter(String host, int port) {
-    this.chan = new ClientChannel(host, port);
-  }
-
-  /* Interact with Tinee server */
-
-  private void send(Message msg) throws IOException {
-    this.chan.send(msg);
-  }
-
-  private Message receive() throws IOException, ClassNotFoundException {
-    return this.chan.receive();
+  CLFormatter() {
   }
 
   /* Following are the auxiliary methods for formatting the UI text */
 
-  static String formatSplash(String user) {
-    return "\nHello " + user + "!\n"
-        + "Note:  Commands can be abbreviated to any prefix, "
-        + "e.g., read [mytag] => re [mytag]\n";
+  
+    static String formatSplash(ResourceBundle messages, String user) {
+    return "\n" + messages.getString("hello") + " " + user + "!\n";
   }
 
-  static String formatMainMenuPrompt() {
-    return "\n[Main] Enter command: "
-        + "read [mytag], "
-        + "manage [mytag], "
-        + "exit"
-        + "\n> ";
+   static String formatMainMenuPrompt(ResourceBundle messages) {
+    return "\n" + messages.getString("MainMenuPrompt") + "\n"
+            + messages.getString("MainMenuCommands")+ "\n";
   }
 
-  static String formatDraftingMenuPrompt(String tag, List<String> lines) {
-    return "\nDrafting: " + formatDrafting(tag, lines)
-        + "\n[Drafting] Enter command: "
-        + "line [mytext], "
-        + "push, "
-        + "exit"
-        + "\n> ";
+  static String formatDraftingMenuPrompt(ResourceBundle messages, String tag, List<String> lines) {
+    return "\n" +messages.getString("DraftingMenuPrompt")+ " \n" +formatDrafting(tag, lines)
+            + messages.getString("DraftingMenuCommands")+ "\n";
   }
 
   static String formatDrafting(String tag, List<String> lines) {
@@ -79,4 +55,17 @@ public class CLFormatter {
     b.append("\n");
     return b.toString();
   }
+  
+  static String formatShow(Map<String, String> tags) {
+    StringBuilder b = new StringBuilder("Show tags");
+    for (String tag : tags.keySet()) {
+      b.append("\n");
+      b.append(String.format("%12s", tag));
+      b.append("  ");
+      b.append(tags.get(tag));
+    };
+    b.append("\n");
+    return b.toString();
+  }
+  
 }

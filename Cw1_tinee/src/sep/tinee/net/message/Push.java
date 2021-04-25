@@ -122,6 +122,10 @@ public final class Push implements Message {
     this.tags = Collections.unmodifiableSet(new LinkedHashSet<>(tags));
     this.lines = Collections.unmodifiableList(new LinkedList<>(lines));
   }
+  
+  public Push() {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
 
   @Override
   public String getHeader() {

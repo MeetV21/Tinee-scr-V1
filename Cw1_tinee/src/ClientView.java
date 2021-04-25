@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import sep.mvc.AbstractView;
 import sep.mvc.DraftingCommand;
@@ -54,9 +55,9 @@ public class ClientView extends AbstractView {
 
       // Print user options
       if (state.equals("Main")) {
-        printToTerminal(CLFormatter.formatMainMenuPrompt());
+        printToTerminal(CLFormatter.formatMainMenuPrompt(getResourceBundle()));
       } else {  // state = "Drafting"
-        printToTerminal(CLFormatter.formatDraftingMenuPrompt(draftTag, getModel().getDraftLines()));
+        printToTerminal(CLFormatter.formatDraftingMenuPrompt(getResourceBundle(),draftTag, getModel().getDraftLines()));
       }
 
       // Read a line of user input
@@ -113,6 +114,13 @@ public class ClientView extends AbstractView {
             break;
           }
         case "push":
+          if ("Drafting".equalsIgnoreCase(this.state)) {
+            getController().pushDraft(draftTag);
+            this.state = "Main";
+            draftTag = null;
+            break;
+          }
+          case "close":
           if ("Drafting".equalsIgnoreCase(this.state)) {
             getController().pushDraft(draftTag);
             this.state = "Main";
