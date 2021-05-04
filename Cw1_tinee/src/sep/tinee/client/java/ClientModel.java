@@ -1,9 +1,10 @@
+package sep.tinee.client.java;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import sep.mvc.AbstractModel;
-import sep.tinee.net.channel.ClientChannel;
+import java.util.ResourceBundle;
 import sep.tinee.net.message.Message;
-import sep.tinee.net.message.Push;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -17,8 +18,8 @@ import sep.tinee.net.message.Push;
  */
 public class ClientModel extends AbstractModel {
 
-  ClientModel(String user,String host,int port){
-    super(user,host,port);
+ public ClientModel(String user, String host, int port) {
+    super(user, host, port);
   }
 
   @Override
@@ -42,7 +43,18 @@ public class ClientModel extends AbstractModel {
   }
 
   @Override
-  public Push createPushCommand(String tag) {
-    return new Push(this.user,tag,this.draftLines);
-   }
+   public ArrayList<String> getDraftLines() {
+    return this.draftLines;
+  }
+
+  @Override
+  public void clearDraft() {
+    this.draftLines = new ArrayList();
+    this.draftTag = null;
+  }
+
+  @Override
+  public void newDraftTag(String tag) {
+   this.draftTag = tag;
+  }
 }

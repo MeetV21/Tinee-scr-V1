@@ -1,0 +1,5 @@
+manage test
+line test this line 1
+line test this line 1
+line test this line 1
+exit

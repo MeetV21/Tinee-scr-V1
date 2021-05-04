@@ -15,7 +15,7 @@
 package sep.mvc;
 
 
-import sep.tinee.net.message.Push;
+import java.io.IOException;
 import sep.tinee.net.message.ReadReply;
 import sep.tinee.net.message.ReadRequest;
 import sep.tinee.net.message.ShowReply;
@@ -51,21 +51,29 @@ public abstract class AbstractController {
    *
    * @param model The Model
    * @param view  The View
-   *
+   *@throws java.io.IOException
    * @see sep.mvc.AbstractView#setController(sep.mvc.AbstractController)
    */
-  protected AbstractController(final AbstractModel model,
-      final AbstractView view) {
+  protected AbstractController(final AbstractModel model, final AbstractView view)  throws IOException {
     this.model = model;
     this.view = view;
     view.setController(this);
+  }
+   /**
+   * Starts the MVC architecture by starting the View
+   *
+   * @throws java.io.IOException
+   */
+  public void run() throws IOException {
+    this.view.run();
   }
 
   /**
    * Shutdown this Controller, and the MVC application as whole. Implicitly
    * closes the bound View.
+   * @throws java.io.IOException
    */
-  public abstract void shutdown();
+  public abstract void shutdown() throws IOException;
 
   /* Getters */
 
@@ -83,21 +91,63 @@ public abstract class AbstractController {
    *
    * @return The bound View
    */
-  protected AbstractView getView() {
+  public AbstractView getView() {
     return this.view;
   }
-  public abstract ReadReply readTag(ReadRequest message);
+   /**
+   * Read messages for a given tag
+   *
+   * @param message (ReadRequest) to be sent to the server
+   * @return The ReadReply from the server
+   */
+  public abstract ReadReply read(ReadRequest message);
 
-  public abstract ShowReply showTags(ShowRequest message);
+ /**
+   * Show all tags existing on the server
+   *
+   * @param message (ShowRequest) to be sent to the server
+   * @return The ShowReply from the server
+   */
+  public abstract ShowReply show(ShowRequest message);
 
-  public abstract void discardDraft();
+  /**
+   * Clears all draftLines added for a draftTag and clears draft tag
+   */
+  public abstract void discard();
 
-  public abstract void pushDraft(String tag);
+  /**
+   * Publishes draft lines added for a tag to the server
+   */
+  public abstract void push();
 
-  public abstract void addDraftLine(DraftingCommand command);
+  /**
+   * Publishes draft lines added for a tag to the server Closes tag to prevent
+   * further updates to the draftTag
+   */
+  public abstract void close();
+
+  /**
+   * Adds a new line to the draft
+   *
+   * @param command (DraftingCommand) action to add a new draft line
+   */
+  public abstract void line(DraftingCommand command);
+
+  /**
+   * Undoes the last draft line and keeps track of the position
+   */
 
   public abstract void undo();
+  /**
+   * Executes the last undo command
+   */
 
   public abstract void redo();
+    /**
+   * Starts a new draft for the tag
+   *
+   * @param tag
+   */
+  public abstract void startNewDraft(String tag);
 
 }

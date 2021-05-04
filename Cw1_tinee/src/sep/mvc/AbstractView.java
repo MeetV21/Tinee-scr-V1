@@ -16,9 +16,9 @@ package sep.mvc;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ResourceBundle;
 
 /**
  * A View provides the front-end user interface, which includes appropriate
@@ -26,12 +26,11 @@ import java.util.logging.Logger;
  * application is often tied to its front-end UI.
  * <p>
  * The View accepts user input, and conveys the corresponding commands to the
- * registered {@linkplain sep.mvc.AbstractController Controller} for
- * processing. The View interacts closely with the Controller, but should not
- * be coupled to any particular Controller (i.e., a View should be
- * interoperable with different Controllers).
- * <p>
- * A View may itself determine when it should be updated, and retrieve the
+ * registered {@linkplain sep.mvc.AbstractController Controller} for processing.
+ * The View interacts closely with the Controller, but should not be coupled to
+ * any particular Controller (i.e., a View should be interoperable with
+ * different Controllers).
+ * <p> may itself determine when it should be updated, and retrieve the
  * required information directly from the
  * {@linkplain sep.mvc.AbstractModel Model}, or operations performed on the
  * Model (as directed by the Controller) may actively push updates to the View,
@@ -43,16 +42,17 @@ import java.util.logging.Logger;
 public abstract class AbstractView {
 
   private AbstractController control;
-  ResourceBundle messages = null;
+  private ResourceBundle messages = null;
 
   /**
    * This View is created without a registered Controller. A Controller is
    * registered by passing this View when the Controller is created.
-   *
+   *@param locale  The Locale object used to find ResourceBundle
    * @see #setController(sep.mvc.AbstractController)
    */
-  protected AbstractView() {
+  protected AbstractView(Locale locale) {
     this.control = null;
+    this.messages = ResourceBundle.getBundle("Resources.messages", locale);
   }
 
   /**
@@ -83,7 +83,7 @@ public abstract class AbstractView {
   /**
    * Start the overall MVC application after it has been assembled -- starts
    * the main UI loop. Maintains an up-to-date presentation of the front-end
-   * user interface (e.g., via {@link #update()}), and interprets user
+   * user interface , and interprets user
    * input as commands for the Controller to process.
    * <p>
    * Should be called by the top-level application bootstrapper (e.g.,
@@ -95,12 +95,7 @@ public abstract class AbstractView {
    */
   public abstract void run() throws IOException;
 
-  /**
-   * Update the presentation of the front-end UI. May be called by
-   * {@link #run()}, or from the model/Controller, as appropriate for the
-   * application and UI design.
-   */
-  public abstract void update();
+    
 
   /* Getters */
 
@@ -129,6 +124,15 @@ public abstract class AbstractView {
     return getController().getModel();  // Checks if a Controller registered
   }
 
+  /**
+   * Returns the resource bundle for UI text based on Locale
+   * Default :  en_GB
+   * @return RespurceBundles
+   */
+  protected ResourceBundle getResourceBundle() { 
+    return this.messages;
+  }
+  
   /* Auxiliary */
 
   /**
@@ -140,7 +144,7 @@ public abstract class AbstractView {
    * @param control The Controller to register
    * @throws IllegalArgumentException If registering a null Controller
    */
-  protected void setController(final AbstractController control) {
+  protected void setController(final AbstractController control) throws IOException {
     if (control == null) {
       throw new IllegalArgumentException(
           "[MVC error] Registering a null Controller.");
@@ -152,17 +156,6 @@ public abstract class AbstractView {
     }
     this.control = control;
   }
-  /**
-   * Registers the ResourceBundle to support Internationalisation
-   *
-   * @param locale The locale to be used to get ResourceBundle
-   */
-  public void setLocale(final Locale locale) {
-    this.messages = ResourceBundle.getBundle("messages", locale);
-  }
-
-  public ResourceBundle getResourceBundle() { 
-    return this.messages;
-  }
+  
 }
 

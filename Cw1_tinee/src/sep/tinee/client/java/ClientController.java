@@ -1,3 +1,5 @@
+package sep.tinee.client.java;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -6,12 +8,13 @@ import sep.mvc.AbstractController;
 import sep.mvc.AbstractModel;
 import sep.mvc.AbstractView;
 import sep.mvc.DraftingCommand;
+import sep.tinee.net.message.Bye;
 import sep.tinee.net.message.Push;
 import sep.tinee.net.message.ReadReply;
 import sep.tinee.net.message.ReadRequest;
 import sep.tinee.net.message.ShowReply;
 import sep.tinee.net.message.ShowRequest;
-
+import java.util.ResourceBundle;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -23,10 +26,10 @@ import sep.tinee.net.message.ShowRequest;
  */
 public class ClientController extends AbstractController {
 
-  protected ArrayList<DraftingCommand> history = null;
-  protected int currentCommand = -1;
+  public ArrayList<DraftingCommand> history = null;
+  public int currentCommand = -1;
 
-  public ClientController(AbstractModel model, AbstractView view) {
+  public ClientController(AbstractModel model, AbstractView view) throws IOException {
     super(model, view);
   }
 
@@ -36,12 +39,13 @@ public class ClientController extends AbstractController {
   }
 
   @Override
-  public void shutdown() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   public void shutdown() throws IOException {
+    this.getModel().send(new Bye()); // Close connection to server
+    this.getView().close(); // Initiate shutdown for View
   }
 
   @Override
-  public ReadReply readTag(ReadRequest message) {
+  public ReadReply read(ReadRequest message) {
     AbstractModel model = this.getModel();
     ReadReply reply = null;
     try {
@@ -54,21 +58,23 @@ public class ClientController extends AbstractController {
   }
 
   @Override
-  public void pushDraft(String tag) {
+  public void push() {
     try {
-      AbstractModel model= this.getModel();
-      Push push = model.createPushCommand(tag);
-      this.getModel().send(push);
-      this.currentCommand = -1;
-      this.history = new ArrayList();
-      this.getModel().clearDraftLines();
+       AbstractModel model = this.getModel();
+
+      Push push = new Push(model.getUser(),model.getDraftTag(), model.getDraftLines()); // Create PUSH message for server
+
+      this.getModel().send(push); // Send PUSH message to server
+      this.getModel().clearDraft(); // Clear model draft data
+
+      resetDraft(); // Reset controller draft
     } catch (IOException exception) {
       Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, exception);
     }
   }
 
   @Override
-  public void addDraftLine(DraftingCommand command) {
+  public void line(DraftingCommand command) {
     this.history.subList(this.currentCommand + 1, this.history.size()).clear();
     this.history.add(command);
     command.execute();
@@ -86,11 +92,16 @@ public class ClientController extends AbstractController {
 
   @Override
   public void redo() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+   if(history.size() > (this.currentCommand + 1)){
+      DraftingCommand command = this.history.get(this.currentCommand+1);
+
+      command.execute();
+      this.currentCommand++;
+    }
   }
 
   @Override
-  public ShowReply showTags(ShowRequest message) {
+  public ShowReply show(ShowRequest message) {
     AbstractModel model = this.getModel();
     ShowReply reply = null;
     try {
@@ -103,13 +114,39 @@ public class ClientController extends AbstractController {
   }
 
   @Override
-  public void discardDraft() {
+  public void discard() {
     this.history = new ArrayList();
-    this.getModel().clearDraftLines();
+    this.getModel().clearDraft();
     this.currentCommand = -1;
   }
 
-    void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
+     @Override
+  public void close() {
+    // Add closing line to close tag
+    DraftingCommand command = new DraftingCommand(this.getModel(), "##CLOSE##");
+    this.line(command);
+ 
+    // Push draft changes to server
+    this.push();
+  }
+
+
+  protected void resetDraft(){
+    this.history = new ArrayList();
+    this.currentCommand = -1;
+  }
+
+  @Override
+  public void startNewDraft(String tag) {
+    this.getModel().newDraftTag(tag);
+  }
+    public ArrayList<DraftingCommand> getHistory(){
+    return this.history;
+  }
+
+  public int getCurrentCommand(){
+    return this.currentCommand;
+  }
+    
 }

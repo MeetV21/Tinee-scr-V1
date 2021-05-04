@@ -1,3 +1,6 @@
+package sep.tinee.client.java;
+
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,10 +28,9 @@ import sep.tinee.net.message.ShowRequest;
 public class ClientView extends AbstractView {
 
   String state = "Main";
-
-    ClientView(Locale locale) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+public ClientView(Locale locale) {
+    super(locale);
+  }
 
   @Override
   public void close() {
@@ -48,7 +50,7 @@ public class ClientView extends AbstractView {
   }
 
   void loop(BufferedReader reader) throws IOException, ClassNotFoundException {
-    String draftTag = null;
+    
     boolean done = false;
     // The loop
     while (!done) {
@@ -57,7 +59,7 @@ public class ClientView extends AbstractView {
       if (state.equals("Main")) {
         printToTerminal(CLFormatter.formatMainMenuPrompt(getResourceBundle()));
       } else {  // state = "Drafting"
-        printToTerminal(CLFormatter.formatDraftingMenuPrompt(getResourceBundle(),draftTag, getModel().getDraftLines()));
+        printToTerminal(CLFormatter.formatDraftingMenuPrompt(getResourceBundle(),this.getModel().getDraftTag(), getModel().getDraftLines()));
       }
 
       // Read a line of user input
@@ -79,26 +81,26 @@ public class ClientView extends AbstractView {
         case "manage":
           if ("Main".equalsIgnoreCase(this.state)) {
             this.state = "Drafting";
-            draftTag = rawArgs[0];
+            this.getController().startNewDraft(rawArgs[0]);
             break;
           }
         case "read":
           if ("Main".equalsIgnoreCase(this.state)) {
-            ReadReply rep = getController().readTag(new ReadRequest(rawArgs[0]));
+            ReadReply rep = getController().read(new ReadRequest(rawArgs[0]));
             printToTerminal(CLFormatter.formatRead(rawArgs[0], rep.users, rep.lines));
             break;
           }
         case "show":
           if ("Main".equalsIgnoreCase(this.state)) {
-            ShowReply rep = getController().showTags(new ShowRequest());
+            ShowReply rep = getController().show(new ShowRequest());
             printToTerminal(CLFormatter.formatShow(rep.tags));
             break;
           }
         case "line":
           if ("Drafting".equalsIgnoreCase(this.state)) {
-            String line = Arrays.stream(rawArgs).collect(Collectors.joining());
+            String line = Arrays.stream(rawArgs).collect(Collectors.joining(" "));
             DraftingCommand command = new DraftingCommand(getController().getModel(), line );
-            getController().addDraftLine(command);
+            getController().line(command);
             break;
           }
         case "undo":
@@ -106,25 +108,30 @@ public class ClientView extends AbstractView {
             getController().undo();
             break;
           }
+          case "redo":
+          if ("Drafting".equalsIgnoreCase(this.state)) {
+            getController().redo();
+            break;
+          }
         case "discard":
           if ("Drafting".equalsIgnoreCase(this.state)) {
-            getController().discardDraft();
+            getController().discard();
             this.state = "Main";
-            draftTag = null;
+            
             break;
           }
         case "push":
           if ("Drafting".equalsIgnoreCase(this.state)) {
-            getController().pushDraft(draftTag);
+            getController().push();
             this.state = "Main";
-            draftTag = null;
+            
             break;
           }
           case "close":
           if ("Drafting".equalsIgnoreCase(this.state)) {
-            getController().pushDraft(draftTag);
+            getController().close();
             this.state = "Main";
-            draftTag = null;
+            
             break;
           }
         default:
@@ -138,9 +145,5 @@ public class ClientView extends AbstractView {
     System.out.print(text);
   }
 
-  @Override
-  public void update() {
-//    System.out.println(text);
-  }
-
+  
 }

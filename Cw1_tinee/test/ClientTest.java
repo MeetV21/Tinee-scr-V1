@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import sep.tinee.client.java.Client;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

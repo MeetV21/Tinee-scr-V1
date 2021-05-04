@@ -1,5 +1,7 @@
+package sep.tinee.client.java;
 
 
+import java.util.ResourceBundle;
 import java.util.*;
 
 /**
@@ -37,12 +39,14 @@ public class CLFormatter {
       b.append(String.format("%12d", i++));
       b.append("  ");
       b.append(x);
-    };
+    
+  }
     return b.toString();
   }
 
   static String formatRead(String tag, List<String> users,
       List<String> read) {
+      
     StringBuilder b = new StringBuilder("Read: #");
     b.append(tag);
     Iterator<String> it = read.iterator();
@@ -51,7 +55,8 @@ public class CLFormatter {
       b.append(String.format("%12s", user));
       b.append("  ");
       b.append(it.next());
-    };
+    
+}
     b.append("\n");
     return b.toString();
   }
@@ -63,7 +68,8 @@ public class CLFormatter {
       b.append(String.format("%12s", tag));
       b.append("  ");
       b.append(tags.get(tag));
-    };
+    
+}
     b.append("\n");
     return b.toString();
   }

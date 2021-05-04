@@ -1,6 +1,8 @@
+package sep.tinee.client.java;
 
 
 
+import java.util.ResourceBundle;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -65,10 +67,9 @@ public class Client {
 
   ClientController controller;
 
-  Client(String user, String host, int port, Locale locale) {
+  Client(String user, String host, int port, Locale locale) throws IOException{
     ClientModel model = new ClientModel(user,host, port);
-    ClientView view = new ClientView();
-    view.setLocale(locale);
+    ClientView view = new ClientView(locale);
     controller = new ClientController(model, view);
   }
 

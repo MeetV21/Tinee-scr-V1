@@ -18,7 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import sep.tinee.net.channel.ClientChannel;
 import sep.tinee.net.message.Message;
-import sep.tinee.net.message.Push;
+
+
 
 /**
  * The Model is the most fundamental component in an MVC application - it
@@ -43,6 +44,8 @@ public abstract class AbstractModel {
     protected ClientChannel channel;
   protected String user;
   protected ArrayList<String> draftLines;
+  
+   protected String draftTag;
 
   public AbstractModel(String user, String host, int port) {
     this.channel = new ClientChannel(host, port);
@@ -50,22 +53,67 @@ public abstract class AbstractModel {
     this.draftLines = new ArrayList<>();
   }
 
-  public ArrayList<String> getDraftLines() {
+  /**
+   * Returns protected String variable user
+   * @return user
+   */
+  public String getUser(){
+    return this.user;
+  }
+
+ /**
+   * Returns protected String variable draftTag
+   * @return draftTag
+   */
+  public String getDraftTag(){
+    return this.draftTag;
+  }
+    
+    /**
+   * Returns protected String ArrayList draftLines
+   * @return draftLines
+   */
+   public ArrayList<String> getDraftLines(){
     return this.draftLines;
   }
 
-  public void clearDraftLines() {
-    this.draftLines = new ArrayList();
-  }
-
+   /**
+   * Communicates with pre built server and sends a message to Server
+   * @param msg Messages
+   * @throws java.io.IOException
+   */
   public abstract void send(Message msg) throws IOException;
+  /**
+   * Retrieves response from the server
+   * @return Message
+   * @throws java.io.IOException
+   * @throws java.lang.ClassNotFoundException
+   */
 
   public abstract Message receive() throws IOException, ClassNotFoundException;
+ /**
+   * Reinitialise the draftLines list and the draftTag
+   */
+  public abstract void clearDraft();
 
+   /**
+   * Updates protected variable draftTag
+   * @param tag
+   */
+  public abstract void newDraftTag(String tag);
+
+   /**
+   * Adds new line to draftLines list
+   * @param text
+   */
   public abstract void addDraftLine(String text);
+  /**
+   * Removes a specific line from the draftLines list
+   * @param text
+   */
 
   public abstract void removeDraftLine(String text);
 
-  public abstract Push createPushCommand(String tag);
+  
 
 }

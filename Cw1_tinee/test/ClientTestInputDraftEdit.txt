@@ -1,0 +1,15 @@
+manage test
+line this is the first line
+line this is the second line
+undo
+redo
+discard
+manage test
+line this is the first line
+line this is the second line
+push
+manage test
+line this is the first line
+line this is the second line
+close
+exit
